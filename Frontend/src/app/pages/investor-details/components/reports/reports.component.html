@@ -1,0 +1,107 @@
+<p-table
+  [value]="reportList"
+  dataKey="investment_id"
+  [rows]="limit"
+  [totalRecords]="totalCount"
+  [showCurrentPageReport]="true"
+  [rowsPerPageOptions]="[10, 25, 50]"
+  styleClass="p-datatable-customers p-datatable-gridlines"
+  [paginator]="true"
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+>
+  <ng-template pTemplate="caption">
+    <div class="grid">
+      <p-dropdown
+          placeholder="Report Type"
+          [options]="typesOption"
+          [(ngModel)]="selectedReportType"
+          [style]="{ minWidth: '100%' }"
+          class="col-12 sm:col-6 lg:col-3"
+      ></p-dropdown>
+      <div class="col-12 sm:col-6 lg:col-3">
+        <p-calendar
+          [(ngModel)]="selectedDate"
+          selectionMode="range"
+          [readonlyInput]="true"
+          inputId="range"
+          [style]="{ minWidth: '100%' }"
+          placeholder="Select Date Range"
+          [showIcon]="true"
+        ></p-calendar>
+      </div>
+      <p-button class="col-12 sm:col-4 lg:col-2"
+        label="Email"
+        [style]="{
+          minWidth: '100%',
+          'background-color': 'white',
+          color: 'black'
+        }"
+        (click)="sendReportInEmail()"
+      ></p-button>
+      <p-button class="col-12 sm:col-4 lg:col-2"
+        label="Download"
+        [style]="{
+          minWidth: '100%',
+          'background-color': 'white',
+          color: 'black'
+        }"
+        (click)="getReports(false, true)"
+      ></p-button>
+      <p-button class="col-12 sm:col-4 lg:col-2"
+        label="Generate"
+        [style]="{
+          minWidth: '100%',
+          'background-color': 'white',
+          color: 'black'
+        }"
+        (click)="generate()"
+      ></p-button>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr *ngIf="currentTableType == 'INVESTMENT_REPORT' || currentTableType == 'INCOME_REPORT'">
+      <th>Investor ID</th>
+      <th>Invested On</th>
+      <th>Amount</th>
+      <th>Expected ROI</th>
+      <th>Report Type</th>
+      <th>Tenure</th>
+      <th>Tenure Type</th>
+      <th>Maturity Date</th>
+    </tr>
+    <tr *ngIf="currentTableType == 'ACCOUNT_STATEMENT'">
+      <th>Transaction ID</th>
+      <th>Amount</th>
+      <th>Purpose</th>
+      <th>Transaction Date</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-report>
+    <tr *ngIf="currentTableType == 'INVESTMENT_REPORT' || currentTableType == 'INCOME_REPORT'">
+      <td>{{ report.investment_id }}</td>
+      <td>{{ report.created_on | date }}</td>
+      <td>{{ report.amount | number : "1.0-2" }}</td>
+      <td>{{ report.expected_roi | number : "1.0-2" }}</td>
+      <td>{{ report.type }}</td>
+      <td>{{ report.tenure }}</td>
+      <td>{{ report.tenure_type }}</td>
+      <td>{{ report.maturity_date | date }}</td>
+    </tr>
+    <tr *ngIf="currentTableType == 'ACCOUNT_STATEMENT'">
+      <td>{{ report.transaction_id }}</td>
+      <td>{{ report.amount | number : "1.0-2" }}</td>
+      <td>{{ report.purpose }}</td>
+      <td>{{ report.transaction_dtm | date }}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td
+        colspan="8"
+        [style]="{ 'justify-content': 'center', 'text-align': 'center' }"
+      >
+        No Report found.
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

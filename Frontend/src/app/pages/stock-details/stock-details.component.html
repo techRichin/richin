@@ -1,0 +1,353 @@
+<app-header></app-header>
+<body>
+  <div class="app-container">
+    <div class="trading-details-container">
+      <div class="trading-graph">
+        <div id="trading-chart"></div>
+      </div>
+      <div class="trade-details">
+        <div class="stock-info">
+          <img
+            [src]="
+              ASSET_TYPE === 'STOCK'
+                ? 'https://logo.clearbit.com/' +
+                  (currentStock?.id?.toLowerCase() || ' ') +
+                  '.com'
+                : cryptoLogoURL
+            "
+            alt="{{ currentStock?.id }}"
+            class="stock-logo"
+          />
+          <div class="stock-name">{{ currentStock?.id ?? "..." }}</div>
+          &nbsp;&nbsp;&nbsp;
+          <p-button
+            icon="pi pi-plus"
+            styleClass="p-button-rounded p-button-secondary p-button-outlined"
+            (click)="addToWatchlist()"
+            class="button-with-space"
+            id="add-watchlist"
+          >
+          </p-button>
+        </div>
+
+        <div class="stock-price">
+          <b
+            >{{ ASSET_TYPE === "CRYPTO" ? "$" : "₹"
+            }}{{ (currentStock?.price | number : "1.2-2") ?? "---" }}</b
+          >
+        </div>
+        <div style="display: flex; justify-content: flex-start">
+          <p-button
+            label="Delivery"
+            class="clear"
+            [style]="{
+              minWidth: '100%',
+              'background-color': 'white',
+              color: 'black',
+              'margin-right': '2rem'
+            }"
+          ></p-button>
+          <p-button
+            label="Intraday"
+            class="clear"
+            [style]="{
+              minWidth: '100%',
+              'background-color': 'white',
+              color: 'black',
+              'margin-left': '2rem'
+            }"
+          ></p-button>
+        </div>
+        <div class="quantity-input">
+          <label for="quantity">Quantity:</label>
+          <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            min="1"
+            [(ngModel)]="quantity"
+            (ngModelChange)="calculateSubtotal()"
+          />
+        </div>
+
+        <!-- <div class="p-inputgroup">
+          <span class="p-inputgroup-addon">$</span>
+          <input type="text" pInputText placeholder="Enter Target" />
+          <span class="p-inputgroup-addon">.00</span>
+        </div> -->
+        <h1 id="subtotal">
+          Total Price:
+          <b
+            >{{ ASSET_TYPE === "CRYPTO" ? "$" : "₹" }}
+            {{ subtotal | number : "1.2-2" }}</b
+          >
+        </h1>
+        <div class="buy-sell-buttons">
+          <button class="buy-button" (click)="buyAssest()">Buy</button>
+          <!-- <button class="sell-button">Sell</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="ASSET_TYPE === 'STOCK'">
+    <div class="main-container">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            <b>Overview</b>
+            <div class="lines"></div>
+          </h4>
+          <p class="card-text"></p>
+          <table class="table table-borderless">
+            <thead>
+              <tr>
+                <th scope="col">Company Name</th>
+                <td scope="col">{{ stockData?.info?.companyName }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Sector</th>
+                <td scope="col">{{ stockData?.industryInfo?.sector }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Market Cap</th>
+                <td scope="col">
+                  ₹ {{ formatMarketCap(stockData?.securityInfo?.issuedSize) }}
+                </td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Open Price</th>
+                <td scope="col">₹ {{ stockData?.priceInfo?.open }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Close Price</th>
+                <td scope="col">₹ {{ stockData?.priceInfo?.close }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Change</th>
+                <td scope="col" style="color: green">
+                  ₹ {{ stockData?.priceInfo?.change }}
+                </td>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            <b>Fundamentals</b>
+            <div class="lines"></div>
+          </h4>
+          <p class="card-text"></p>
+          <table class="table table-borderless">
+            <thead>
+              <tr>
+                <th scope="col">Total Buy Quantity</th>
+                <td scope="col">
+                  {{ stockData?.preOpenMarket?.totalBuyQuantity }}
+                </td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Total Sell Quantity</th>
+                <td scope="col">
+                  {{ stockData?.preOpenMarket?.totalSellQuantity }}
+                </td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">TotalTradedVolume</th>
+                <td scope="col">
+                  {{ stockData?.preOpenMarket?.totalTradedVolume }}
+                </td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Lower Circuit</th>
+                <td scope="col">₹ {{ stockData?.priceInfo?.lowerCP }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Upper Circuit</th>
+                <td scope="col">₹ {{ stockData?.priceInfo?.upperCP }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Face Value</th>
+                <td scope="col">{{ stockData?.securityInfo?.faceValue }}</td>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="main-container">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            <b>Daily High & Low</b>
+          </h4>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            <b>Weekly High & Low</b>
+          </h4>
+        </div>
+      </div>
+    </div>
+    <div class="line-meters-container">
+      <div class="line-meter">
+        <div class="line"></div>
+        <div class="point" [style.left.%]="calculateDailyHigh()"></div>
+        <div class="high-low-label high">
+          <span>Today's High<br /></span>
+          {{ stockData?.priceInfo?.intraDayHighLow?.max }}
+        </div>
+        <div class="high-low-label low">
+          <span>Today's Low<br /></span>
+          {{ stockData?.priceInfo?.intraDayHighLow?.min }}
+        </div>
+      </div>
+
+      <div class="line-meter">
+        <div class="line"></div>
+        <div class="point" [style.left.%]="calculateWeaklyHigh()"></div>
+        <div class="high-low-label high">
+          <span>Today's High<br /></span>
+          {{ stockData?.priceInfo?.weekHighLow?.max }}
+        </div>
+        <div class="high-low-label low">
+          <span>Today's Low<br /></span>
+          {{ stockData?.priceInfo?.weekHighLow?.min }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="ASSET_TYPE === 'CRYPTO'">
+    <div class="main-container">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            <b>Overview</b>
+            <div class="lines"></div>
+          </h4>
+          <p class="card-text"></p>
+          <table class="table table-borderless">
+            <thead>
+              <tr>
+                <th scope="col">Crypto Name:</th>
+                <td scope="col">
+                  <b>{{ cryptoStatsInfo?.name }}</b>
+                </td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Crypto Symbol</th>
+                <td scope="col">{{ cryptoStatsInfo?.symbol }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Crypto Rank</th>
+                <td scope="col">{{ cryptoStatsInfo?.rank }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Percentage Change</th>
+                <td scope="col" style="color: green">
+                  {{ cryptoStatsInfo?.changePercent24Hr | number }}%
+                </td>
+              </tr>
+            </thead>
+            <thead>
+              <thead>
+                <tr>
+                  <th scope="col">Max Supply</th>
+                  <td scope="col">
+                    {{
+                      cryptoStatsInfo.maxSupply
+                        ? "$ " + cryptoStatsInfo?.maxSupply
+                        : "NA"
+                    }}
+                  </td>
+                </tr>
+              </thead>
+            </thead>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            <b>Fundamentals</b>
+            <div class="lines"></div>
+          </h4>
+          <p class="card-text"></p>
+          <table class="table table-borderless">
+            <thead>
+              <tr>
+                <th scope="col">Market Cap USD</th>
+                <td scope="col">
+                  ${{ formatMarketCap(cryptoStatsInfo?.marketCapUsd) }}
+                </td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Supply:</th>
+                <td scope="col">
+                  ${{ formatMarketCap(cryptoStatsInfo.supply) }}
+                </td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Volume Used:</th>
+                <td scope="col">
+                  ${{ formatMarketCap(cryptoStatsInfo?.volumeUsd24Hr) }}
+                </td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">VWAP :</th>
+                <td scope="col">${{ cryptoStatsInfo?.vwap24Hr }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Explorer link</th>
+                <td scope="col">
+                  <!-- <a [href]="cryptoStatsInfo.explorer" target="_blank">{{ cryptoStatsInfo.explorer }}</a> -->
+                </td>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <br />
+    <br />
+  </div>
+</body>

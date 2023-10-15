@@ -1,0 +1,208 @@
+<app-header></app-header>
+
+<p-tabView>
+  <!-- Tab for ALL -->
+  <p-tabPanel header="ALL">
+    <div class="card-container">
+      <div class="mycard left-card">
+        <p-card header="Current">
+          <p class="m-0" style="color: green; font-size: 30px">
+            <b>₹ {{ (currentAmount | number : "1.2-2") ?? "loading..." }}</b>
+          </p>
+        </p-card>
+      </div>
+      <div class="mycard right-card">
+        <p-card header="Invested">
+          <p class="m-0" style="color: gray; font-size: 30px">
+            <b>₹ {{ (investedAmount | number : "1.2-2") ?? "loading..." }}</b>
+          </p>
+        </p-card>
+      </div>
+    </div>
+    <div *ngIf="stockQuantityMap.size && cryptoQuantityMap.size">
+      <app-all
+        [allInvested]="investedAmount"
+        [allCurrent]="currentAmount"
+        [stocks]="stockQuantityMap.size"
+        [cryptos]="cryptoQuantityMap.size"
+      ></app-all>
+    </div>
+
+    <div class="my-app">
+      <div class="my-card card">
+        <div class="my-card__header card-header">
+          <!-- <h3 class="my-card__header-title card-title"><b>Stocks</b></h3> -->
+          <!-- <a class="my-card__header-link" href="#">See all →</a> -->
+        </div>
+      </div>
+    </div>
+  </p-tabPanel>
+
+  <!-- Tab for Stocks -->
+  <p-tabPanel header="Stocks">
+    <div class="card-container">
+      <div class="mycard left-card">
+        <p-card header="Current">
+          <p class="m-0" style="color: green; font-size: 30px">
+            <b
+              >₹
+              {{ (currentAmountStocks | number : "1.2-2") ?? "loading..." }}</b
+            >
+          </p>
+        </p-card>
+      </div>
+      <div class="mycard right-card">
+        <p-card header="Invested">
+          <p class="m-0" style="color: gray; font-size: 30px">
+            <b
+              >₹
+              {{ (investedAmountStocks | number : "1.2-2") ?? "loading..." }}</b
+            >
+          </p>
+        </p-card>
+      </div>
+    </div>
+
+    <div *ngIf="stockQuantityMap.size > 0">
+      <app-stocks
+        [investedAmt]="currentAmountStocks"
+        [percentChange]="
+          calculatePercentageChange(currentAmountStocks, investedAmountStocks)
+        "
+        [currentValue]="investedAmountStocks"
+        [quantityMap]="stockQuantityMap"
+      ></app-stocks>
+    </div>
+    <div class="my-app">
+      <div class="my-card card">
+        <div class="my-card__header card-header">
+          <!-- <h3 class="my-card__header-title card-title"><b>Stocks</b></h3> -->
+          <!-- <a class="my-card__header-link" href="#">See all →</a> -->
+        </div>
+      </div>
+    </div>
+  </p-tabPanel>
+  <!-- Tab for Crypto -->
+
+  <p-tabPanel header="Crypto">
+    <div class="card-container">
+      <div class="mycard left-card">
+        <p-card header="Current">
+          <p
+            class="m-0"
+            style="font-size: 30px"
+            [ngStyle]="{
+              color:
+                investedAmountCrypto > currentAmountCrypto ? 'red' : 'green'
+            }"
+          >
+            <b
+              >₹
+              {{ (currentAmountCrypto | number : "1.3-3") ?? "loading..." }}</b
+            >
+          </p>
+        </p-card>
+      </div>
+      <div class="mycard right-card">
+        <p-card header="Invested">
+          <p class="m-0" style="color: gray; font-size: 30px">
+            <b
+              >₹
+              {{ (investedAmountCrypto | number : "1.3-3") ?? "loading..." }}</b
+            >
+          </p>
+        </p-card>
+      </div>
+    </div>
+    <div class="my-app">
+      <div class="my-card card">
+        <div class="my-card__header card-header">
+          <!-- <h3 class="my-card__header-title card-title"><b>Stocks</b></h3> -->
+          <!-- <a class="my-card__header-link" href="#">See all →</a> -->
+        </div>
+
+        <div *ngIf="cryptoQuantityMap.size > 0">
+          <app-crypto
+            [investedAmt]="investedAmountCrypto"
+            [percentChange]="
+              calculatePercentageChange(
+                investedAmountCrypto,
+                currentAmountCrypto
+              )
+            "
+            [currentValue]="currentAmountCrypto"
+            [quantityMap]="cryptoQuantityMap"
+          ></app-crypto>
+        </div>
+
+        <!-- <div *ngFor="let stock of assests" class="my-card card">
+          <ul class="my-list list-group list-group-flush">
+            <li class="my-list-item list-group-item">
+              <div class="my-list-item__date">
+                <span class="my-list-item__date-day">28</span>
+                <span class="my-list-item__date-month">jul</span>
+              </div>
+              <div class="my-list-item__image">
+                <img
+                  class="stock-logo"
+                  src="https://assets-netstorage.groww.in/stock-assets/logos/GSTK543320.png"
+                  alt="{{ stock.name }} Logo"
+                />
+              </div>
+              <div class="my-list-item__text">
+                <h4 class="my-list-item__text-title">{{ stock.name }}</h4>
+                <p class="my-list-item__text-description">
+                  {{ stock.symbol }}
+                </p>
+              </div>
+
+              <div class="my-list-item__fee">
+                <span class="my-list-item__fee-delta">₹ {{ stock.price ?? "Loading..." }}</span>
+                <span
+                  class="my-list-item__fee-currency"
+                  [class.green]="stock.changePercentage > 0"
+                  [class.red]="stock.changePercentage < 0"
+                >
+                  {{ stock.changePercentage }}</span
+                >
+              </div>
+            </li>
+          </ul>
+        </div> -->
+      </div>
+    </div>
+  </p-tabPanel>
+  <p-tabPanel header="Goals">
+    <div class="card">
+      <p-table
+        [value]="goals"
+        selectionMode="single"
+        dataKey="code"
+        [tableStyle]="{ 'min-width': '100%' }"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Sr No</th>
+            <th>Crypto Percent</th>
+            <th>Crypto Return</th>
+            <th>Stocks Percentage</th>
+            <th>Stocks Expected Return</th>
+            <th>Future Value</th>
+            <th>Years</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-goal>
+          <tr [routerLink]="['/goal-report/', { id: goal?._id }]">
+            <td>{{ goal?.crypto_percentage?.toFixed(2) }}</td>
+            <td>{{ goal?.crypto_expected_return?.toFixed(2) }}</td>
+            <td>{{ goal?.stocks_percentage?.toFixed(2) }}</td>
+            <td>{{ goal?.stocks_expected_return?.toFixed(2) }}</td>
+            <td>{{ goal?.future_value?.toFixed(2) }}</td>
+            <td>{{ goal?.years?.toFixed(2) }}</td>
+            <td>{{ goal?.total_purchase?.toFixed(2) }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </p-tabPanel>
+</p-tabView>

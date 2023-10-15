@@ -1,0 +1,6 @@
+{
+    "/api": {
+      "target": "https://api.richin.in:5000",
+      "secure": true
+    }
+}

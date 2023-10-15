@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="https://unpkg.com/primeflex@3.1.2/primeflex.css" />
+<app-header></app-header>
+<div class="navigate-back">
+  <i
+    class="pi pi-angle-left"
+    style="font-size: 2rem"
+    (click)="navigateBack()"
+  ></i>
+  <h2>Investor Details #{{ userid }}</h2>
+</div>
+<app-user-details [investorDetail]="investorDetail"></app-user-details>
+<p-tabView>
+  <p-tabPanel header="Details" leftIcon="pi pi-home">
+    <ng-template pTemplate="content">
+      <app-details [investorDetail]="investorDetail" [userid]="userid"></app-details>
+    </ng-template>
+  </p-tabPanel>
+
+  <p-tabPanel header="Smart Investments" leftIcon="pi pi-server">
+    <ng-template pTemplate="content">
+      <app-smart-investments [userId]="userid"></app-smart-investments>
+    </ng-template>
+  </p-tabPanel>
+
+  <p-tabPanel header="FD Investments" leftIcon="pi pi-credit-card">
+    <ng-template pTemplate="content">
+      <app-fd-investments [userId]="userid"></app-fd-investments>
+    </ng-template>
+  </p-tabPanel>
+
+  <p-tabPanel header="SIP Investments" leftIcon="pi pi-wallet">
+    <ng-template pTemplate="content">
+      <app-sip-investments [userId]="userid"></app-sip-investments>
+    </ng-template>
+  </p-tabPanel>
+
+  <p-tabPanel header="Reports" leftIcon="pi pi-list">
+    <ng-template pTemplate="content">
+      <app-reports [userId]="userid"></app-reports>
+    </ng-template>
+  </p-tabPanel>
+
+  <p-tabPanel header="Support Requests" leftIcon="pi pi-fw pi-cog">
+    <ng-template pTemplate="content">
+      <app-support-requests [userId]="userid"></app-support-requests>
+    </ng-template>
+  </p-tabPanel>
+</p-tabView>
+<p-toast position="top-right"></p-toast>

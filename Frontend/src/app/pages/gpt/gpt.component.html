@@ -1,0 +1,53 @@
+<app-header></app-header>
+<div class="chat-container">
+  <div class="chat-input">
+    <input
+      pInputText
+      pKeyFilter="int"
+      placeholder="Send a message"
+      [(ngModel)]="value"
+      #messageInput
+    />
+
+    <p-button
+      label="Send"
+      (click)="sendMessage()"
+      styleClass="p-button-outlined"
+    ></p-button>
+  </div>
+  <br />
+  <div class="chat-messages">
+    <div
+      *ngFor="let message of messages"
+      class="message"
+      [ngClass]="{
+        'user-message': message.isUser,
+        'system-message': !message.isUser
+      }"
+    >
+      <div class="message-content">
+        <span class="message-text">{{ message.text }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="reference-cards" *ngIf="showReference">
+    <div
+      class="reference-card"
+      *ngFor="let data of referenceData; let i = index"
+    >
+      <p-card>
+        <div class="p-card-title">
+          <span>{{ data.question }}</span>
+          <i
+            style="cursor: pointer"
+            class="pi pi-times"
+            (click)="removeReferenceQuestion(i)"
+          ></i>
+        </div>
+        <div class="p-card-body">
+          {{ data.answer }}
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>
