@@ -4,7 +4,6 @@ import { NseIndia } from "stock-nse-india";
 import { getTopCryptos } from "./crypto.js";
 import axios from "axios";
 const nseIndia = new NseIndia()
-import puppeteer from "puppeteer"
 
 
 
