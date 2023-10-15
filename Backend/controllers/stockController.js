@@ -1,6 +1,7 @@
 import axios from "axios";
 import { NseIndia } from "stock-nse-india";
 const nseIndia = new NseIndia()
+import fetch from "node-fetch";
 
 export const getCurrentStockPrice = async(symbol) => {
     console.log("getting price")

@@ -27,6 +27,7 @@
     "mongoose": "^6.2.3",
     "multiparty": "^4.2.3",
     "ngx-socket-io": "^4.5.1",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^6.7.2",
     "openssl": "^2.0.0",
     "puppeteer": "^21.3.8",
