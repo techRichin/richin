@@ -107,12 +107,12 @@ const listenSocketEvents = (io) => {
         // Getting the list of trending stocks
         setInterval(async() => {
             console.log("broadcasting....")
+            io.sockets?.emit("TRENDING_CRYPTOS", await getTopCryptos(6));
             const gainerLoosers = await getGainersAndLoosers(7);
             if(gainerLoosers.gainers.length > 0){
                 console.log("broadcast stocks")
                 io.sockets?.emit("TRENDING_STOCKS",gainerLoosers);
             }
-            io.sockets?.emit("TRENDING_CRYPTOS", await getTopCryptos(6));
         }, 10000);
 
         

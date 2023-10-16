@@ -52,7 +52,8 @@ export const getGainersAndLoosers = async(limit) => {
     try{
 
     // let res = await fetch("https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%2050");
-    const d = await fetch(`https://www.nseindia.com//api/equity-stockIndices?index=${encodeURIComponent("NIFTY 50".toUpperCase())}`).then((data)=>data.json())
+    const x = await fetch(`https://www.nseindia.com//api/equity-stockIndices?index=${encodeURIComponent("NIFTY 50".toUpperCase())}`);
+        const d = await x.json()
 
         let indexData = d
         const gainers = [];

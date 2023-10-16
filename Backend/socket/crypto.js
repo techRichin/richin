@@ -2,6 +2,7 @@ import axios from "axios";
 
 export async function getTopCryptos(n) {
     try {
+      console.log("getting top cryptos ")
       // Make a GET request to the CoinGecko API to fetch the top 5 cryptocurrencies
       const response = await axios.get(
         'https://api.coincap.io/v2/assets'
