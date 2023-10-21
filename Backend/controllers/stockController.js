@@ -81,7 +81,7 @@ async function GetTopNiftyGainers(limit) {
         const pchange = row.find('td:eq(6)').text(); 
         if(name.length > 0 && !set.has(name)){
             set.add(name)
-            let shortSymbol = hrefArr?.at(-1);
+            let shortSymbol = hrefArr[hrefArr.length -1];
 
             let ssCopy = "";
 
@@ -138,7 +138,7 @@ async function GetTopNiftyGainers(limit) {
 
         if(name.length > 0 && !set.has(name)){
             set.add(name)
-            let shortSymbol = hrefArr?.at(-1);
+            let shortSymbol = hrefArr[hrefArr.length -1];
 
             let ssCopy = "";
 
