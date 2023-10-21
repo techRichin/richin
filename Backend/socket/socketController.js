@@ -68,8 +68,7 @@ export class StockDataHandler {
                         return;
                         // throw new Error("No Symbol specified");
                     }
-
-                                      
+                                     
                     const response = await fetch(`https://www.nseindia.com/api/quote-equity?symbol=${symbol.toUpperCase()}`).then((d)=>d.json())
                     console.log("each stock resp",response)
                     responses.push(response);

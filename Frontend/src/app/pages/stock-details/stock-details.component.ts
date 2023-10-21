@@ -9,7 +9,6 @@ import { MessageService, SelectItem } from 'primeng/api';
 declare const TradingView: any;
 
 
-
 @Component({
   selector: 'app-stock-details',
   templateUrl: './stock-details.component.html',
@@ -99,7 +98,7 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
         .then((res) => {
           console.log('crypto details ARE :', res.data);
           this.cryptoData = res.data;
-        });
+      });
     }
   }
 
@@ -118,11 +117,14 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
         console.log(response);
         console.log('Market Status',response);
         this.marketStatus = response.data?.marketStatus;
+        return this.marketStatus;
       })
       .catch(function (error) {
         console.log(error);
         alert('Something went wrong , please try again');
+        return false
       });
+      return false;
   }
   
   constructor(
@@ -132,7 +134,6 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
     private messageService: MessageService
   ) 
   {
-
     window.addEventListener('beforeunload', function (event) {
       // You can perform actions or show a confirmation message here
       // For example, you can show a confirmation dialog to the user

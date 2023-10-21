@@ -14,8 +14,6 @@ export class DashboardComponent implements OnInit {
 
   public topLoosers:any[] = [];
   public topGainers:any[] = [];
-  public topLosersCryptos:any[] = [];
-  public mostTradedCryptos:any[] = [];
 
   routes: Routes = [
     // ... other routes ...
@@ -46,24 +44,24 @@ export class DashboardComponent implements OnInit {
 
 }
 
-  constructor(private socketService: SocketService){
-      // this.topLoosers = [...new Array(6)].map(() => 0);
-      // this.topGainers = [...new Array(6)].map(() => 0);
+  // constructor(private socketService: SocketService){
+  //     this.topLoosers = [...new Array(6)].map(() => 0);
+  //     this.topGainers = [...new Array(6)].map(() => 0);
 
-      socketService.fetchTopStocks()?.subscribe((data: any) => {
-        // this.topLosersStocks= data;
-        console.log(data)
-        this.topGainers = data?.gainers;
-        this.topLoosers = data?.losers;
-        this.cleanUp();
-      });
+  //     socketService.fetchTopStocks()?.subscribe((data: any) => {
+  //       // this.topLosersStocks= data;
+  //       console.log(data)
+  //       this.topGainers = data?.gainers;
+  //       this.topLoosers = data?.losers;
+  //       // this.cleanUp();
+  //     });
 
-      socketService.fetchTopCryptos()?.subscribe((data: any) => {
-        // this.topLosersStocks= data;
-        this.mostTradedCryptos = data?.gainers;
-        this.topLosersCryptos = data?.loosers;
-      })
-  }
+  //     // socketService.fetchTopCryptos()?.subscribe((data: any) => {
+  //     //   // this.topLosersStocks= data;
+  //     //   this.mostTradedCryptos = data?.gainers;
+  //     //   this.topLosersCryptos = data?.loosers;
+  //     // })
+  // }
 
 
   
@@ -77,39 +75,5 @@ export class DashboardComponent implements OnInit {
 
   stocksData: any[] = [];
   
-
-
-  // topLosersCryptos = [
-  //   {
-  //     title: 'Crypto 3',
-  //     value: '₹119.10',
-  //     percentageChange: '-8%',
-  //     isNew: false,
-  //   },
-  //   {
-  //     title: 'Crypto 4',
-  //     value: '₹119.10',
-  //     percentageChange: '-12%',
-  //     isNew: false,
-  //   },
-  //   {
-  //     title: 'Crypto 4',
-  //     value: '₹119.10',
-  //     percentageChange: '-12%',
-  //     isNew: false,
-  //   },
-  //   {
-  //     title: 'Crypto 4',
-  //     value: '₹119.10',
-  //     percentageChange: '-12%',
-  //     isNew: false,
-  //   },
-  //   // Add more top losers cryptos data here
-  // ];
-  newIPOs = [
-    { name: 'IPO 1', image: 'url_to_image_1' },
-    { name: 'IPO 2', image: 'url_to_image_2' },
-    // ... add more IPO data ...
-  ];
   ngOnInit(): void {}
 }

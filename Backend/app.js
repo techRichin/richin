@@ -24,7 +24,7 @@ const app = express();
 const IS_HTTPS = false;
 
 //middlewares
-app.use(cors());
+app.use(cors())
 app.use(express.json());
 
 app.get('/',async (req,res)=>{

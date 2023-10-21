@@ -4,20 +4,23 @@
 
 <div class="grid">
   <!-- Display most traded cryptos -->
+
+  <ng-template #inactiveboxgainger>
+    <div
+      style="height: 100px; background-color: #f1f5f9"
+      class="surface-card shadow-2 border-round"
+    >
+      Loading...
+    </div>
+  </ng-template>
+
   <div
     class="col-12 md:col-6 lg:col-3"
     *ngFor="let crypto of mostTradedCryptos"
     [routerLink]="['/stock-details', { title: crypto.id, type: 'CRYPTO' }]"
   >
-    <ng-template #inactivebox>
-      <div
-        style="height: 100px; background-color: #f1f5f9"
-        class="surface-card shadow-2 border-round"
-      >
-        Loading...
-      </div>
-    </ng-template>
-    <div class="surface-card shadow-2 p-3 border-round">
+   
+    <div class="surface-card shadow-2 p-3 border-round" *ngIf="crypto?.id; else inactiveboxgainger">
       <div class="flex justify-content-between mb-3">
         <div>
           <span class="block text-500 font-medium mb-3">{{ crypto.id }}</span>
@@ -59,9 +62,9 @@
   <div
     class="col-12 md:col-6 lg:col-3"
     *ngFor="let loser of topLosersCryptos"
-    [routerLink]="['/stock-details', { title: loser.id, type: 'CRYPTO' }]"
+    [routerLink]="['/stock-details', { title: loser?.id, type: 'CRYPTO' }]"
   >
-    <div class="surface-card shadow-2 p-3 border-round">
+    <div class="surface-card shadow-2 p-3 border-round" *ngIf="loser?.id; else inactivebox">
       <div class="flex justify-content-between mb-3">
         <div>
           <span class="block text-500 font-medium mb-3">{{ loser.id }}</span>
