@@ -3,6 +3,7 @@ import { isMarketOpen } from "../controllers/stockController.js";
 import { NseIndia } from "stock-nse-india";
 import { getTopCryptos } from "./crypto.js";
 import axios from "axios";
+import request from "request";
 const nseIndia = new NseIndia()
 
 
@@ -34,51 +35,88 @@ export class StockDataHandler {
                 // })
             } else {
                 console.log("market is closed");
-                getStockData(stocktickers).then((data) => {
-                    // console.log("received data from api as market is closed : ",data)
-                    const transformedData = [];
-                    if (data?.length > 0) {
-                        data?.forEach(stock => {
-                            const rawData = stock;
-                            transformedData.push({
-                                id: rawData?.info?.symbol,
-                                price: rawData?.priceInfo?.lastPrice,
-                                dayVolume: rawData?.preOpenMarket?.totalTradedVolume
-                            });
-                        });
-                    }
-                    console.log("successfully subscribed to the stocks")
-                    console.log(transformedData)
-                   this.socket?.emit("STATIC_STOCK_DATA",transformedData)
-                }).catch((err) => {
-                    console.log("Something went wrong while fetching stock data when the market is closed")
-                })
+                console.log("hfvishgi",stocktickers.join(','))
+                const symbolsWithNS = stocktickers.map(symbol => symbol + '.NS').join(',');
+                axios.get('http://192.168.0.103:7000/get_stock_data', {
+                  params: {
+                      symbols: symbolsWithNS, // Convert the array to a comma-separated string
+                  }
+              }).then(response => {
+                  if (Array.isArray(response.data)) {
+                      const transformedData = [];
+              
+                      response.data.forEach(data => {
+                          if (!data.error) {
+                              const { symbol, price, volume } = data;
+                              console.log('Symbol:', symbol);
+                              console.log('Price:', price);
+                              console.log('Day Volume:', volume);
+                              transformedData.push({
+                                  id: symbol,
+                                  price: price,
+                                  dayVolume: volume
+                              });
+                          } else {
+                              console.error('Error for symbol', data.symbol, ':', data.error);
+                          }
+                      });
+                      this.socket?.emit("STATIC_STOCK_DATA", transformedData);
+                  } else {
+                      console.error('Invalid response data:', response.data);
+                  }
+              }).catch(error => {
+                  console.error('Error while fetching stock data:', error);
+              });
+            
             }
         } catch (er) {
             console.log("error occured while getting stock stream")
         }
 
         async function getStockData(symbols) {
-            if (symbols.length == 0) return [];
+            console.log("SYMBOL",symbols)
+            if (symbols.length === 0) return [];
             const responses = [];
-
+          
             for (const symbol of symbols) {
-                try {
-                    if (!symbol) {
-                        return;
-                        // throw new Error("No Symbol specified");
-                    }
-                                     
-                    const response = await fetch(`https://www.nseindia.com/api/quote-equity?symbol=${symbol.toUpperCase()}`).then((d)=>d.json())
-                    console.log("each stock resp",response)
-                    responses.push(response);
-                } catch (error) {
-                    console.error(`Error fetching data for ${symbol}`,error);
+              try {
+                if (!symbol) {
+                  return;
+                  // throw new Error("No Symbol specified");
                 }
+          
+                const options = {
+                  url: `https://www.nseindia.com/api/quote-equity?symbol=${symbol.toUpperCase()}`,
+                  method: 'GET',
+                  headers: {
+                    'Accept': 'application/json'
+                  }
+                };
+                console.log("After Req")
+                request(options, (error, response, body) => {
+                  if (error) {
+                    console.error(`Error fetching data for ${symbol}`, error);
+                    return;
+                  }
+          
+                  if (response.statusCode !== 200) {
+                    console.error(`Error fetching data for ${symbol}. HTTP status:`, response.statusCode);
+                    return;
+                  }
+                
+                  console.log("BODDDDY",body)
+                  const data = JSON.parse(body);
+                  console.log("each stock resp", data);
+                  responses.push(data);
+                });
+                console.log("Response",responses)
+              } catch (error) {
+                console.error(`Error fetching data for ${symbol}`, error);
+              }
             }
-
+          
             return responses;
-        }
+          }
     }
 }
 

@@ -3,6 +3,7 @@ import { NseIndia } from "stock-nse-india";
 const nseIndia = new NseIndia()
 import * as cheerio from 'cheerio'
 import fetch from "node-fetch";
+import request from 'request';
 
 export const getCurrentStockPrice = async(symbol) => {
     console.log("getting price")
@@ -207,24 +208,62 @@ export const getGainersAndLoosers = async(limit) => {
 }
 
 }
+// let prev_status = false;
+// export const isMarketOpen = async() => {
+//     try {
+//         console.log("fetching market status ...");
+//         const data = await fetch("https://www.nseindia.com/api/marketStatus").then((da) => da.json());
+//         const marketStatus = data?.marketState[0].marketStatus;
+//         console.log("StsTSUYS",marketStatus)
+//         if (marketStatus?.toLowerCase() == 'closed' || marketStatus?.toLowerCase() == 'close') {
+//             prev_status = false;
+//             return false;
+//         }
+//         prev_status = true;
+//         return true;
+//     } catch (err) {
+//         console.log("Failed to fetch market status", err);
+//         return prev_status;
+//     }
+// }
 let prev_status = false;
-export const isMarketOpen = async() => {
+export const isMarketOpen = async () => {
     try {
+     console.log("Fetching market status...");
+     const options = {
+       url: 'https://www.nseindia.com/api/marketStatus',
+       method: 'GET',
+       headers: {
+         'Accept': 'application/json'
+       }
+     };
+     request(options, (error, response, body) => {
+      console.log("bdhsjfljvbdjbv")
+       if (error) {
+         console.error("Error: Failed to fetch market status", error);
+         return prev_status;
+       }
+   
+       if (response.statusCode !== 200) {
+         console.error("Error: Failed to fetch market status. HTTP status:", response.statusCode);
+         return prev_status;
+       }
+   
+       const data = JSON.parse(body);
+       const marketStatus = data?.marketState[0].marketStatus;
+   
+       if (marketStatus?.toLowerCase() === 'closed' || marketStatus?.toLowerCase() === 'close') {
+         prev_status = false;
+         return false;
+       }
+   
+       prev_status = true;
+       return true;
+     });
+   } catch (err) {
+     console.error("Error: Failed to fetch market status", err);
+     return prev_status;
+   }
+   }
 
-        // const d = await nseIndia.getData("https://www.nseindia.com/api/marketStatus");
-        // console.log(d);
-        console.log("fetching market status ...")
-        const data = await fetch("https://www.nseindia.com/api/marketStatus").then((da)=>da.json());
-        const marketStatus = data?.marketState[0].marketStatus;
-        console.log(marketStatus)
-        if (marketStatus?.toLowerCase() == 'closed' || marketStatus?.toLowerCase() == 'close') {
-            prev_status = false;
-            return false;
-        }
-        prev_status = true;
-        return true;
-    } catch (err) {
-        console.log("Failed to fetch market status",err)
-        return prev_status;
-    }
-}
+
