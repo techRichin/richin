@@ -37,7 +37,7 @@
           <img
             [src]="
               'https://logo.clearbit.com/' +
-              (stock?.symbol?.toLowerCase() || ' ') +
+              (stock?.shortSymbol?.toLowerCase() || ' ') +
               '.com'
             "
             alt="{{ stock?.title }}"
@@ -91,7 +91,7 @@
           <img
             [src]="
               'https://logo.clearbit.com/' +
-              (stock?.symbol?.toLowerCase() || 'default') +
+              (stock?.shortSymbol?.toLowerCase() || 'default') +
               '.com'
             "
             alt="Alternative Text"

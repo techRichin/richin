@@ -14,7 +14,7 @@ export const getSymbolFromName = (name) => {
     } else {
       return null;
     }
-  };
+};
 
 export const getCurrentStockPrice = async(symbol) => {
     console.log("getting price")
@@ -27,35 +27,46 @@ export const getCurrentStockPrice = async(symbol) => {
     }
 }
 
-export const GetStockDetails = async (symbol)=>{
-    if(!symbol){
+export const GetStockDetails = async (sym)=>{
+    if(!sym){
         return{};
     }
 
     try {
 
-        axios.get('http://127.0.0.1:8000/get_stock_data', {
+        const resp = await axios.get('https://api.richin.in:8000/get_stock_data', {
             params: {
-                symbol: symbol?.toUpperCase() + ".NS", // Convert the array to a comma-separated string
-        }}).then((response) => {
-            console.log(response?.data)
-            const { symbol, price, volume } = response.data
-            console.log('Symbol:', symbol);
-            console.log('Price:', price);
-            console.log('Day Volume:', volume);
-            console.log("--------------",{
-                id: symbol,
-                price: price,
-                dayVolume: volume
-            })
-            return {
-                id: symbol,
-                price: price,
-                dayVolume: volume
-            }
-        }).catch((err)=>{
-            console.log("error occured while getting stock data from flask api " ,err);
-        })
+                symbol: sym?.toUpperCase() + ".NS", // Convert the array to a comma-separated string
+        }})
+        const { symbol, price, volume } = resp.data
+        return {
+            id: symbol,
+            price: price,
+            dayVolume: volume
+        }
+
+        // axios.get('http://127.0.0.1:8000/get_stock_data', {
+        //     params: {
+        //         symbol: symbol?.toUpperCase() + ".NS", // Convert the array to a comma-separated string
+        // }}).then((response) => {
+        //     console.log(response?.data)
+        //     const { symbol, price, volume } = response.data
+        //     console.log('Symbol:', symbol);
+        //     console.log('Price:', price);
+        //     console.log('Day Volume:', volume);
+        //     console.log("--------------",{
+        //         id: symbol,
+        //         price: price,
+        //         dayVolume: volume
+        //     })
+        //     return {
+        //         id: symbol,
+        //         price: price,
+        //         dayVolume: volume
+        //     }
+        // }).catch((err)=>{
+        //     console.log("error occured while getting stock data from flask api " ,err);
+        // })
     }catch(er){
         console.log(er);
     }
@@ -144,7 +155,8 @@ async function GetTopNiftyGainers(limit) {
           const name = row.find('td:eq(0)').find('> a').text();
           const stockDetailTag = row.find('td:eq(0)').find('> a').attr('href').split("/")?.at(-1);
 
-          const lastPrice = row.find('td:eq(2)').text(); 
+          let lastPrice = row.find('td:eq(2)').text().split(" ")[0]; 
+          lastPrice = lastPrice.split("-")[0]
           const totalChange = row.find('td:eq(2)').find('> div').text(); 
           const change = totalChange.split(" ")[0]
           const pchange = totalChange.split(" ")[1]
@@ -160,6 +172,7 @@ async function GetTopNiftyGainers(limit) {
               });
           }
         });
+        console.log(topLoosers)
         return topLoosers
     } catch (error) {
       console.error('Error:', error);
@@ -188,16 +201,29 @@ export const getGainersAndLoosers = async(limit) => {
 let prev_status = false;
 export const isMarketOpen = async() => {
     try {
-        console.log("fetching market status ...");
-        const data = await fetch("https://www.nseindia.com/api/marketStatus").then((da) => da.json());
-        const marketStatus = data?.marketState[0].marketStatus;
-        console.log("StsTSUYS",marketStatus)
-        if (marketStatus?.toLowerCase() == 'closed' || marketStatus?.toLowerCase() == 'close') {
-            prev_status = false;
+
+        const resp = await axios.get("https://economictimes.indiatimes.com/markets");
+        const html = resp.data;
+        const $ = cheerio.load(html);
+        const marketStatus = $('.mktStatus').text();
+        console.log(marketStatus)
+        if(marketStatus.toLowerCase() == "closed"){
             return false;
+        }else{
+            return true;
         }
-        prev_status = true;
-        return true;
+
+
+        // console.log("fetching market status ...");
+        // const data = await fetch("https://www.nseindia.com/api/marketStatus").then((da) => da.json());
+        // const marketStatus = data?.marketState[0].marketStatus;
+        // console.log("StsTSUYS",marketStatus)
+        // if (marketStatus?.toLowerCase() == 'closed' || marketStatus?.toLowerCase() == 'close') {
+        //     prev_status = false;
+        //     return false;
+        // }
+        // prev_status = true;
+        // return true;
     } catch (err) {
         console.log("Failed to fetch market status", err);
         return prev_status;

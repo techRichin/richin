@@ -34,52 +34,50 @@ export class StockDataHandler {
                 // })
             } else {
                 console.log("market is closed",stocktickers.length);
-                getStockData(stocktickers).then((data) => {
-                    // console.log("received data from api as market is closed : ",data)
+                const data = await getStockData(stocktickers);
+                 console.log("received data from api as market is closed : ",data)
                     const transformedData = [];
                     if (data?.length > 0) {
                         data?.forEach(stock => {
                             const rawData = stock;
                             console.log("---oooo-",rawData)
                             transformedData.push({
-                                id: rawData.symbol,
+                                id: rawData.id,
                                 price: rawData.price,
-                                dayVolume: rawData.volume
+                                dayVolume: rawData.dayVolume
                             });
                         });
                     }
                     console.log("--------successfully subscribed to the stocks-----")
-                    console.log(transformedData.length)
+                    console.log("transformed data: ",transformedData)
                    this.socket?.emit("STATIC_STOCK_DATA",transformedData)
-                }).catch((err) => {
-                    console.log("Something went wrong while fetching stock data when the market is closed")
-                })
+                
             }
         } catch (er) {
             console.log("error occured while getting stock stream")
         }
 
         async function getStockData(symbols) {
-            if (symbols.length == 0) return [];
             const responses = [];
-
-            for (const symbol of symbols) {
-                try {
-                    if (!symbol) {
-                        return;
-                        // throw new Error("No Symbol specified");
-                    }
-                                     
-                    const response = await GetStockDetails(symbol);
-                    console.log("ooooo----",response);
-                    responses.push(response);
-                } catch (error) {
-                    console.error(`Error fetching data for ${symbol}`,error);
+          
+            await Promise.all(symbols.map(async (symbol) => {
+              try {
+                if (!symbol) {
+                  throw new Error("No Symbol specified");
                 }
-            }
-
+          
+                const response = await GetStockDetails(symbol)
+                if(response){
+                    console.log("got response : ",response)
+                    responses.push(response)
+                }
+              } catch (error) {
+                console.error(`Error fetching data for ${symbol}`, error);
+              }
+            }));
+          
             return responses;
-        }
+          }
     }
 }
 

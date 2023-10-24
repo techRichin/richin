@@ -194,7 +194,7 @@ export class PortfolioComponent implements OnInit {
       const map = new Map();
 
       data?.forEach((ele:any) => {
-          map.set(ele?.id?.toLowerCase(),ele?.price);
+          map.set(ele?.id?.toLowerCase()?.split(".")[0],ele?.price);
       });
 
       const copy:any[] = [];
@@ -202,7 +202,7 @@ export class PortfolioComponent implements OnInit {
       this.assests.map((asset:any)=>{
         const entry = {
           ...asset,
-          currentPrice:map.get(asset?.assetSymbol?.toLowerCase())
+          currentPrice:map.get(asset?.assetSymbol?.toLowerCase()?.split(".")[0])
         }
 
         // this will be updated when we fetch the assets itself
@@ -253,7 +253,6 @@ export class PortfolioComponent implements OnInit {
   }
 
   fetchStocks(): void {
-        
       this.stockService.GetAssest().subscribe({
         next: (res: any) => {
           console.log(res)

@@ -360,7 +360,7 @@ export class WalletComponent implements OnInit {
       const map = new Map();
 
       data?.forEach((ele:any) => {
-          map.set(ele?.id?.toLowerCase(),ele?.price);
+          map.set(ele?.id?.toLowerCase()?.split(".")[0],ele?.price);
       });
 
       const copy:any[] = [];
@@ -368,7 +368,7 @@ export class WalletComponent implements OnInit {
       this.assests.map((asset:any)=>{
         const entry = {
           ...asset,
-          currentPrice:map.get(asset?.assetSymbol?.toLowerCase())
+          currentPrice:map.get(asset?.assetSymbol?.toLowerCase()?.split(".")[0])
         }
 
         // this will be updated when we fetch the assets itself
@@ -434,8 +434,8 @@ export class WalletComponent implements OnInit {
           const temp:any[] = []
           res?.forEach((d:any)=>{
             console.log("datatttttttttt",d)
-            temp?.push(d?.assetSymbol?.toLowerCase())
-            if(this.cryptoMap.get(d?.assetSymbol?.toLowerCase())){
+            temp?.push(d?.assetSymbol?.toLowerCase()?.split(".")[0])
+            if(this.cryptoMap.get(d?.assetSymbol?.toLowerCase()?.split(".")[0])){
               cryptos += d?.assetSymbol?.toLowerCase() + ","
             }
 

@@ -17,7 +17,7 @@ export class AllComponent implements OnInit,OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     console.log(this.cryptos,this.stocks)
-    if (changes["cryptos"] && !changes["cryptos"].firstChange|| changes["allCurrent"] && !changes["allCurrent"].firstChange || changes["stocks"] && !changes["stocks"].firstChange ) {
+    if (changes["cryptos"] && !changes["cryptos"].firstChange && changes["allCurrent"] && !changes["allCurrent"].firstChange && changes["stocks"] && !changes["stocks"].firstChange ) {
         this.updateData()
     }
   }
