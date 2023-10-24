@@ -34,7 +34,7 @@ export const GetStockDetails = async (sym)=>{
 
     try {
 
-        const resp = await axios.get('https://api.richin.in:8000/get_stock_data', {
+        const resp = await axios.get('http://127.0.0.1:8000/get_stock_data', {
             params: {
                 symbol: sym?.toUpperCase() + ".NS", // Convert the array to a comma-separated string
         }})
