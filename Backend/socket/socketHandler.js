@@ -93,6 +93,7 @@ const listenSocketEvents = (io) => {
             // listening to events 
             console.log("00000")
             socket.on("GET_STOCK_DATA", (payload, cb) => {
+                console.log("getting data stream for ",payload)
                 handler.GetStockDataStream(payload, cb)
             });
 
@@ -107,8 +108,8 @@ const listenSocketEvents = (io) => {
         // Getting the list of trending stocks
         setInterval(async() => {
             console.log("broadcasting....")
-            io.sockets?.emit("TRENDING_CRYPTOS", await getTopCryptos(6));
-            const gainerLoosers = await getGainersAndLoosers(7);
+            io.sockets?.emit("TRENDING_CRYPTOS", await getTopCryptos(5));
+            const gainerLoosers = await getGainersAndLoosers(5);
             console.log("Gainers",gainerLoosers.gainers)
            // console.log(gainerLoosers.gainers.length , gainerLoosers.losers.length)
            if(gainerLoosers.gainers != undefined){

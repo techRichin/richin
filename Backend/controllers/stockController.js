@@ -2,8 +2,6 @@ import axios from "axios";
 import { NseIndia } from "stock-nse-india";
 const nseIndia = new NseIndia()
 import * as cheerio from 'cheerio'
-
-import request from 'request';
 import * as fs from 'fs';
 
 // Load the JSON file containing the name to symbol mapping
@@ -11,15 +9,10 @@ const nameToSymbolMap = JSON.parse(fs.readFileSync('./nameToSymbolMap.json', 'ut
 
 
 export const getSymbolFromName = (name) => {
-    // Check if the name exists in the map
-    console.log("NAMEE",name)
-    if (nameToSymbolMap.hasOwnProperty(name)) {
-        console.log("SYMBOL RESP.",nameToSymbolMap[name])
-      return nameToSymbolMap[name];
+    if (nameToSymbolMap.hasOwnProperty(name?.toLowerCase())) {
+      return nameToSymbolMap[name?.toLowerCase()];
     } else {
-      // Handle the case when the name is not found
-      console.log("NULLL")
-      return null; // or any other default value you prefer
+      return null;
     }
   };
 
@@ -34,20 +27,37 @@ export const getCurrentStockPrice = async(symbol) => {
     }
 }
 
-export const GetStockDetails = async (req,res)=>{
-    const symbol = req.params?.symbol;
-    console.log("fetching data for : ---> ",symbol)
+export const GetStockDetails = async (symbol)=>{
+    if(!symbol){
+        return{};
+    }
 
     try {
-      const stockUrl = `https://www.nseindia.com/get-quotes/equity?symbol=${symbol}`; 
-      const response = await axios.get(stockUrl);
-      const html = response.data;
-      const $ = cheerio.load(html);
-      const price = $('#quoteLtp');
-      console.log("-----",price)
-        return response;
-    } catch (err) {
-        throw Error(err);
+
+        axios.get('http://127.0.0.1:8000/get_stock_data', {
+            params: {
+                symbol: symbol?.toUpperCase() + ".NS", // Convert the array to a comma-separated string
+        }}).then((response) => {
+            console.log(response?.data)
+            const { symbol, price, volume } = response.data
+            console.log('Symbol:', symbol);
+            console.log('Price:', price);
+            console.log('Day Volume:', volume);
+            console.log("--------------",{
+                id: symbol,
+                price: price,
+                dayVolume: volume
+            })
+            return {
+                id: symbol,
+                price: price,
+                dayVolume: volume
+            }
+        }).catch((err)=>{
+            console.log("error occured while getting stock data from flask api " ,err);
+        })
+    }catch(er){
+        console.log(er);
     }
 }
 
@@ -62,7 +72,6 @@ export const getStockPriceBetweenDateRange = async(req, res) => {
         }
 
         const data = await nseIndia.getEquityHistoricalData(symbol, range);
-        console.log(data[0].data);
         return res.send({ data: data });
 
     } catch (err) {
@@ -72,45 +81,37 @@ export const getStockPriceBetweenDateRange = async(req, res) => {
 
 
 async function GetTopNiftyGainers(limit) {
+
     try {
-     const gainersUrl = 'https://www.moneycontrol.com/stocks/marketstats/nsegainer/index.php'; 
+     const gainersUrl = 'https://groww.in/markets/top-gainers?index=GIDXNIFTY100'; 
 
       const response = await axios.get(gainersUrl);
       const html = response.data;
       const $ = cheerio.load(html);
-      const tb = $('.bsr_table > table > tbody');
+      const tb = $('.tb10Table > tbody');
       const topGainers = [];
-      const set = new Set();
 
       tb.find('tr').each((index, element) => {
         if(limit == topGainers.length){
             return topGainers;
         }
         const row = $(element); 
-        const linkHref = row.find('td').find("> span > h3 > a").attr('href');
-        let hrefArr = linkHref?.split("/")
-        const name = row.find('td:eq(0)').find('> span > h3 > a').text();
-        const lastPrice = row.find('td:eq(3)').text(); 
-        const change = row.find('td:eq(5)').text(); 
-        const pchange = row.find('td:eq(6)').text(); 
-        if(name.length > 0 && !set.has(name)){
-            set.add(name)
-            let shortSymbol = hrefArr[hrefArr.length -1];
 
-            let ssCopy = "";
+        const name = row.find('td:eq(0)').find('> a').text();
+        const stockDetailTag = row.find('td:eq(0)').find('> a').attr('href').split("/")?.at(-1);
+        const lastPrice = row.find('td:eq(2)').text().split(" ")[0]; 
+        const totalChange = row.find('td:eq(2)').find('> div').text(); 
+        const change = totalChange.split(" ")[0]
+        const pchange = totalChange.split(" ")[1]
 
-            for(let i in shortSymbol){
-                if(!isNumber(shortSymbol[i])){
-                    ssCopy += shortSymbol[i];
-                }
-            }
-
+        if(name.length > 0){
             topGainers.push({
                 lastPrice:lastPrice,
                 change:change,
                 symbol:name,
                 pChange:pchange,
-                shortSymbol:getSymbolFromName(name)
+                shortSymbol:getSymbolFromName(name),
+                stockDetailTag:stockDetailTag
             });
         }
       });
@@ -121,58 +122,45 @@ async function GetTopNiftyGainers(limit) {
     } 
 }
 
-  function isNumber(char) {
-    return /^\d$/.test(char);
-  }
 
   async function GetTopNiftyLoosers(limit) {
-    const loosersUrl = 'https://www.moneycontrol.com/stocks/marketstats/nseloser/index.php'; 
 
     console.log("scrapping loosers")
     try {
-      const response = await axios.get(loosersUrl);
-      const html = response.data;
-      const $ = cheerio.load(html);
-      const tb = $('.bsr_table > table > tbody');
-      const topLoosers = [];
+        const loosersUrl = 'https://groww.in/markets/top-losers?index=GIDXNIFTY100'; 
 
-      const set = new Set();
+        const response = await axios.get(loosersUrl);
+        const html = response.data;
+        const $ = cheerio.load(html);
+        const tb = $('.tb10Table > tbody');
+        const topLoosers = [];
+  
+        tb.find('tr').each((index, element) => {
+          if(limit == topLoosers.length){
+              return topLoosers;
+          }
+          const row = $(element); 
+  
+          const name = row.find('td:eq(0)').find('> a').text();
+          const stockDetailTag = row.find('td:eq(0)').find('> a').attr('href').split("/")?.at(-1);
 
-      tb.find('tr').each((index, element) => {
-        if(limit == topLoosers.length){
-            return topLoosers;
-        }
-        const row = $(element); 
-        const name = row.find('td:eq(0)').find('> span > h3 > a').text();
-        const lastPrice = row.find('td:eq(3)').text(); 
-        const change = row.find('td:eq(5)').text(); 
-        const pchange = row.find('td:eq(6)').text(); 
-        const linkHref = row.find('td').find("> span > h3 > a").attr('href');
-        let hrefArr = linkHref?.split("/")
-
-        if(name.length > 0 && !set.has(name)){
-            set.add(name)
-            let shortSymbol = hrefArr[hrefArr.length -1];
-
-            let ssCopy = "";
-
-            for(let i in shortSymbol){
-                if(!isNumber(shortSymbol[i])){
-                    ssCopy += shortSymbol[i];
-                }
-            }
-
+          const lastPrice = row.find('td:eq(2)').text(); 
+          const totalChange = row.find('td:eq(2)').find('> div').text(); 
+          const change = totalChange.split(" ")[0]
+          const pchange = totalChange.split(" ")[1]
+  
+          if(name.length > 0){
             topLoosers.push({
-                lastPrice:lastPrice,
-                change:change,
-                symbol:name,
-                pChange:pchange,
-                shortSymbol:getSymbolFromName(name)
-            });
-        }
-      });
-
-    return topLoosers
+                  lastPrice:lastPrice,
+                  change:change,
+                  symbol:name,
+                  pChange:pchange,
+                  shortSymbol:getSymbolFromName(name),
+                  stockDetailTag:stockDetailTag
+              });
+          }
+        });
+        return topLoosers
     } catch (error) {
       console.error('Error:', error);
     }
@@ -187,30 +175,6 @@ export const getGainersAndLoosers = async(limit) => {
             losers:  await GetTopNiftyLoosers(limit)
         }
         return respData;
-
-    // // let res = await fetch("https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%2050");
-    // const x = await fetch(`https://www.nseindia.com/api/equity-stockIndices?index=${encodeURIComponent("NIFTY 50".toUpperCase())}`);
-    //     const d = await x.json()
-
-    //     let indexData = d
-    //     const gainers = [];
-    //     const losers = [];
-    //     console.log(indexData.data?.length)
-    //     indexData?.data?.forEach((equityInfo) => {
-    //         if (gainers.length < limit && equityInfo.pChange > 0)
-    //             gainers.push(equityInfo)
-    //         else if (losers.length < limit && equityInfo.pChange <= 0) {
-    //             losers.push(equityInfo)
-    //         } else {
-    //             return true;
-    //         }
-    //     });
-
-    //     const respData = {
-    //         gainers: [...gainers].sort((a, b) => b.pChange - a.pChange),
-    //         losers: [...losers].sort((a, b) => a.pChange - b.pChange)
-    //     }
-        // return respData;
 }catch(err){
     console.log("Error while fetching top gainers and loosers");
     const respData = {

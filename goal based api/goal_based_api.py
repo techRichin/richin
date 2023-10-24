@@ -71,6 +71,10 @@ pca = joblib.load('pca.pkl')
 
 df = pd.read_csv(xl)
 
+# 
+
+
+
 def minmax_normalize_dict(input_dict):
     if not input_dict:
         return {}
@@ -304,6 +308,45 @@ def get_data():
     print(crypto)
     return jsonify(abc.to_json(orient = 'records'), portfolio_analysis,stocks,crypto)
 
+
+
+# stock details 
+@app.route('/get_stock_data', methods=['GET'])
+def get_stock_data():
+    symbol = request.args.get('symbol')
+    
+    if not symbol:
+        return jsonify({'error': 'No symbol provided'})
+
+    try:
+
+        stock = yf.Ticker(symbol)
+        data = stock.history(period="1d")
+
+        if not data.empty:
+            latest_data = data.iloc[-1]
+            timestamp = latest_data.name
+            price = latest_data['Close']
+            volume = latest_data['Volume']
+
+            response_data = {
+                'symbol': symbol,
+                'price': price,
+                'volume': volume,
+            }
+
+            return jsonify(response_data)
+        else:
+            response_data = {
+                    'symbol': "",
+                    'price': 0,
+                    'volume': 0,
+            }
+            
+            return jsonify(response_data)
+    except Exception as e:
+        return jsonify({'error': f'Error: {e}'})        
+                
 
 #  chat part
 

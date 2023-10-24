@@ -152,7 +152,7 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
 
     if (this.ASSET_TYPE == 'STOCK') {
       this.getMarketStatus();
-      this.getStockDetails();
+      //this.getStockDetails();
       socketService.subscribeToContinousData().subscribe((data: any) => {
         console.log('socket live data : ', data);
 
