@@ -109,11 +109,15 @@ const listenSocketEvents = (io) => {
             console.log("broadcasting....")
             io.sockets?.emit("TRENDING_CRYPTOS", await getTopCryptos(6));
             const gainerLoosers = await getGainersAndLoosers(7);
-            console.log(gainerLoosers.gainers.length , gainerLoosers.losers.length)
+            console.log("Gainers",gainerLoosers.gainers)
+           // console.log(gainerLoosers.gainers.length , gainerLoosers.losers.length)
+           if(gainerLoosers.gainers != undefined){
             if(gainerLoosers.gainers.length > 0){
                 console.log("broadcast stocks")
                 io.sockets?.emit("TRENDING_STOCKS",gainerLoosers);
             }
+           }
+            
         }, 10000);
 
         

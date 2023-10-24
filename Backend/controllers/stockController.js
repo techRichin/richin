@@ -2,7 +2,26 @@ import axios from "axios";
 import { NseIndia } from "stock-nse-india";
 const nseIndia = new NseIndia()
 import * as cheerio from 'cheerio'
-import fetch from "node-fetch";
+
+import request from 'request';
+import * as fs from 'fs';
+
+// Load the JSON file containing the name to symbol mapping
+const nameToSymbolMap = JSON.parse(fs.readFileSync('./nameToSymbolMap.json', 'utf8'));
+
+
+export const getSymbolFromName = (name) => {
+    // Check if the name exists in the map
+    console.log("NAMEE",name)
+    if (nameToSymbolMap.hasOwnProperty(name)) {
+        console.log("SYMBOL RESP.",nameToSymbolMap[name])
+      return nameToSymbolMap[name];
+    } else {
+      // Handle the case when the name is not found
+      console.log("NULLL")
+      return null; // or any other default value you prefer
+    }
+  };
 
 export const getCurrentStockPrice = async(symbol) => {
     console.log("getting price")
@@ -26,11 +45,6 @@ export const GetStockDetails = async (req,res)=>{
       const $ = cheerio.load(html);
       const price = $('#quoteLtp');
       console.log("-----",price)
-       
-        // let r = await fetch(`https://www.nseindia.com/api/quote-equity?symbol=TCS`)
-        // a = await r?.json();
-        // console.log(a);
-        // const resp = await nseIndia.getEquityDetails(symbol);
         return response;
     } catch (err) {
         throw Error(err);
@@ -96,7 +110,7 @@ async function GetTopNiftyGainers(limit) {
                 change:change,
                 symbol:name,
                 pChange:pchange,
-                shortSymbol:ssCopy
+                shortSymbol:getSymbolFromName(name)
             });
         }
       });
@@ -104,8 +118,8 @@ async function GetTopNiftyGainers(limit) {
     
     } catch (error) {
       console.error('Error:', error);
-    }
-  }
+    } 
+}
 
   function isNumber(char) {
     return /^\d$/.test(char);
@@ -153,7 +167,7 @@ async function GetTopNiftyGainers(limit) {
                 change:change,
                 symbol:name,
                 pChange:pchange,
-                shortSymbol:ssCopy
+                shortSymbol:getSymbolFromName(name)
             });
         }
       });
@@ -210,13 +224,10 @@ export const getGainersAndLoosers = async(limit) => {
 let prev_status = false;
 export const isMarketOpen = async() => {
     try {
-
-        // const d = await nseIndia.getData("https://www.nseindia.com/api/marketStatus");
-        // console.log(d);
-        console.log("fetching market status ...")
-        const data = await fetch("https://www.nseindia.com/api/marketStatus").then((da)=>da.json());
+        console.log("fetching market status ...");
+        const data = await fetch("https://www.nseindia.com/api/marketStatus").then((da) => da.json());
         const marketStatus = data?.marketState[0].marketStatus;
-        console.log(marketStatus)
+        console.log("StsTSUYS",marketStatus)
         if (marketStatus?.toLowerCase() == 'closed' || marketStatus?.toLowerCase() == 'close') {
             prev_status = false;
             return false;
@@ -224,7 +235,48 @@ export const isMarketOpen = async() => {
         prev_status = true;
         return true;
     } catch (err) {
-        console.log("Failed to fetch market status",err)
+        console.log("Failed to fetch market status", err);
         return prev_status;
     }
 }
+//let prev_status = false;
+// export const isMarketOpen = async () => {
+//     try {
+//      console.log("Fetching market status...");
+//      const options = {
+//        url: 'https://www.nseindia.com/api/marketStatus',
+//        method: 'GET',
+//        headers: {
+//          'Accept': 'application/json'
+//        }
+//      };
+//      request(options, (error, response, body) => {
+//       console.log("bdhsjfljvbdjbv")
+//        if (error) {
+//          console.error("Error: Failed to fetch market status", error);
+//          return prev_status;
+//        }
+   
+//        if (response.statusCode !== 200) {
+//          console.error("Error: Failed to fetch market status. HTTP status:", response.statusCode);
+//          return prev_status;
+//        }
+   
+//        const data = JSON.parse(body);
+//        const marketStatus = data?.marketState[0].marketStatus;
+   
+//        if (marketStatus?.toLowerCase() === 'closed' || marketStatus?.toLowerCase() === 'close') {
+//          prev_status = false;
+//          return false;
+//        }
+   
+//        prev_status = true;
+//        return true;
+//      });
+//    } catch (err) {
+//      console.error("Error: Failed to fetch market status", err);
+//      return prev_status;
+//    }
+//    }
+
+
