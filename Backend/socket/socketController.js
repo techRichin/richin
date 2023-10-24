@@ -40,7 +40,7 @@ export class StockDataHandler {
                 axios.get('http://192.168.0.103:7000/get_stock_data', {
                   params: {
                       symbols: symbolsWithNS, // Convert the array to a comma-separated string
-                  }
+                }
               }).then(response => {
                   if (Array.isArray(response.data)) {
                       const transformedData = [];
