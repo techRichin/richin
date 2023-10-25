@@ -172,7 +172,6 @@ async function GetTopNiftyGainers(limit) {
               });
           }
         });
-        console.log(topLoosers)
         return topLoosers
     } catch (error) {
       console.error('Error:', error);
