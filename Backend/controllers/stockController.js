@@ -72,6 +72,42 @@ export const GetStockDetails = async (sym)=>{
     }
 }
 
+export const GetStockFinancialData = async (sym)=>{
+    if(!sym){
+        return{};
+    }
+
+    try {
+        const resp = await axios.get('http://127.0.0.1:8000/get_stock_financial_data', {
+            params: {
+                symbol: sym?.toUpperCase() + ".NS", // Convert the array to a comma-separated string
+        }})
+        const { company_name, sector, market_cap, open_price, close_price, change, total_buy_quantity,
+            total_sell_quantity, total_traded_volume, lower_circuit, upper_circuit, face_value,
+            daily_low, weekly_high, weekly_low} = resp.data
+        return {
+                companyName: company_name,
+                sector: sector,
+                marketCap: market_cap,
+                openPrice: open_price,
+                closePrice: close_price,
+                change: change,
+                totalBuyQuantity: total_buy_quantity,
+                totaSellQuantity: total_sell_quantity,
+                totalTradedVolume: total_traded_volume,
+                lowerCircuit: lower_circuit,
+                upperCircuit: upper_circuit,
+                faceValue: face_value,
+                dailylow: daily_low,
+                weeklyHigh: weekly_high,
+                weeklylow: weekly_low
+        }
+    }catch(er){
+        console.log(er);
+    }
+}
+
+
 export const getStockPriceBetweenDateRange = async(req, res) => {
 
     const { symbol, start, end } = req.body;

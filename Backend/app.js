@@ -39,6 +39,7 @@ app.use("/api/transactions",checkUserAuth,transactionRoutes);
 app.post("/api/goal/create",checkUserAuth,(req,res) => GoalController.createGoal(req,res))
 app.get("/api/goals",checkUserAuth,(req,res)=>GoalController.getGoals(req,res));
 app.get("/api/getStockDetails/:symbol",checkUserAuth,(req,res)=>GetStockDetails(req,res));
+app.get("/api/getStockFinancialData/:symbol",checkUserAuth,(req,res)=>GetStockFinancialData(req,res));
 app.get("/api/goal/getGoalDetails/:id",checkUserAuth,(req,res)=>GoalController.getGoalDetails(req,res));
 app.get("/api/goal/getGoalDetails",checkUserAuth,(req,res) => GoalController.getGoalDetails(req,res));
 // app.use("/api/stock",stockRoutes);

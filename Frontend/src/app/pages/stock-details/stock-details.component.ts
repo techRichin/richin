@@ -163,7 +163,7 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
 
       socketService.getStockData([this.title]);
       socketService.getStaticStockData()?.subscribe((data: any) => {
-        console.log('static stock data : ', data);
+       // console.log('static stock data : ', data);
         this.currentStock = data[0];
         this.subtotal = data[0].price;
         this.assetPrice = data[0]?.price;
@@ -220,7 +220,6 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
 
   ngAfterViewInit(): void {
     this.loadTradingViewLibrary();
-    console.log("1st")
   }
 
   calculateDailyHigh(): number {
