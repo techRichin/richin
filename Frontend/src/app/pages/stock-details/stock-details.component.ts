@@ -30,6 +30,7 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
   cryptoMap = new Map();
   public cryptoStat = new Map();
   stockData: any;
+  stockMetaData:any;
   cryptoData: any;
   cryptoStatsInfo : any;
   currentStock: any;
@@ -75,6 +76,15 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
     console.log("BTC",this.cryptoStat.get("bitcoin"))
   }
 
+  async getStockMetaData(){
+    console.log("hbfjdsbvdbvvidfgijh");
+    const metaData = await axios.get(`${
+      environment.baseUrl
+    }/api/getStockFinancialData/${this.title?.toUpperCase()}`)
+    console.log('Stock meta data : ',metaData.data);
+    this.stockMetaData = metaData.data;
+  }
+
   async getStockDetails() {
     if (this.ASSET_TYPE == 'STOCK') {
       await axios
@@ -105,6 +115,7 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
 
   getMarketStatus(){
     console.log(this.currentStock);
+    this.getStockMetaData()
     axios.interceptors.request.use(function (config) {
       config.headers.Authorization = `Bearer ${localStorage.getItem(
         'authToken'
@@ -147,6 +158,8 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
     this.route.params.subscribe((params: any) => {
       this.title = params.title;
       console.log(params);
+      .
+      
       this.ASSET_TYPE = params?.type;
     });
 
