@@ -158,8 +158,6 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
     this.route.params.subscribe((params: any) => {
       this.title = params.title;
       console.log(params);
-      .
-      
       this.ASSET_TYPE = params?.type;
     });
 
