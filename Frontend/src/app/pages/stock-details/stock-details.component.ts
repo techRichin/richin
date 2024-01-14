@@ -30,6 +30,7 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
   cryptoMap = new Map();
   public cryptoStat = new Map();
   stockData: any;
+  stockMetaData:any;
   cryptoData: any;
   cryptoStatsInfo : any;
   currentStock: any;
@@ -75,6 +76,15 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
     console.log("BTC",this.cryptoStat.get("bitcoin"))
   }
 
+  async getStockMetaData(){
+    console.log("hbfjdsbvdbvvidfgijh");
+    const metaData = await axios.get(`${
+      environment.baseUrl
+    }/api/getStockFinancialData/${this.title?.toUpperCase()}`)
+    console.log('Stock meta data : ',metaData.data);
+    this.stockMetaData = metaData.data;
+  }
+
   async getStockDetails() {
     if (this.ASSET_TYPE == 'STOCK') {
       await axios
@@ -105,6 +115,7 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
 
   getMarketStatus(){
     console.log(this.currentStock);
+    this.getStockMetaData()
     axios.interceptors.request.use(function (config) {
       config.headers.Authorization = `Bearer ${localStorage.getItem(
         'authToken'
@@ -163,7 +174,7 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
 
       socketService.getStockData([this.title]);
       socketService.getStaticStockData()?.subscribe((data: any) => {
-        console.log('static stock data : ', data);
+       // console.log('static stock data : ', data);
         this.currentStock = data[0];
         this.subtotal = data[0].price;
         this.assetPrice = data[0]?.price;
@@ -220,7 +231,6 @@ export class StockDetailsComponent implements AfterViewInit,OnDestroy  {
 
   ngAfterViewInit(): void {
     this.loadTradingViewLibrary();
-    console.log("1st")
   }
 
   calculateDailyHigh(): number {

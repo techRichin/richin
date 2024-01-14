@@ -102,42 +102,50 @@
           <table class="table table-borderless">
             <thead>
               <tr>
-                <th scope="col">Company Name</th>
-                <td scope="col">{{ stockData?.info?.companyName }}</td>
+                <th scope="col">Previous Close</th>
+                <td scope="col">{{ stockMetaData?.previousClose }}</td>
               </tr>
             </thead>
             <thead>
               <tr>
-                <th scope="col">Sector</th>
-                <td scope="col">{{ stockData?.industryInfo?.sector }}</td>
+                <th scope="col">Open</th>
+                <td scope="col">{{ stockMetaData?.open }}</td>
               </tr>
             </thead>
             <thead>
               <tr>
-                <th scope="col">Market Cap</th>
-                <td scope="col">
-                  ₹ {{ formatMarketCap(stockData?.securityInfo?.issuedSize) }}
-                </td>
+                <th scope="col">Bid</th>
+                <td scope="col">{{ stockMetaData?.bid }}</td>
               </tr>
             </thead>
             <thead>
               <tr>
-                <th scope="col">Open Price</th>
-                <td scope="col">₹ {{ stockData?.priceInfo?.open }}</td>
+                <th scope="col">Ask</th>
+                <td scope="col">{{ stockMetaData?.ask }}</td>
               </tr>
             </thead>
             <thead>
               <tr>
-                <th scope="col">Close Price</th>
-                <td scope="col">₹ {{ stockData?.priceInfo?.close }}</td>
+                <th scope="col">Day's Range</th>
+                <td scope="col">{{ stockMetaData?.dayRange }}</td>
               </tr>
             </thead>
             <thead>
               <tr>
-                <th scope="col">Change</th>
-                <td scope="col" style="color: green">
-                  ₹ {{ stockData?.priceInfo?.change }}
-                </td>
+                <th scope="col">52 Week Range</th>
+                <td scope="col">{{ stockMetaData?.weekRange }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Volume</th>
+                <td scope="col">{{ stockMetaData?.volume }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">Average Volume</th>
+                <td scope="col">{{ stockMetaData?.avgVolume }}</td>
               </tr>
             </thead>
           </table>
@@ -145,101 +153,59 @@
       </div>
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title">
-            <b>Fundamentals</b>
-            <div class="lines"></div>
-          </h4>
+          <br>
+          <br>
+          <br>
           <p class="card-text"></p>
           <table class="table table-borderless">
             <thead>
               <tr>
-                <th scope="col">Total Buy Quantity</th>
-                <td scope="col">
-                  {{ stockData?.preOpenMarket?.totalBuyQuantity }}
-                </td>
+                <th scope="col">Market Cap</th>
+                <td scope="col">{{ stockMetaData?.marketCap }}</td>
               </tr>
             </thead>
             <thead>
               <tr>
-                <th scope="col">Total Sell Quantity</th>
-                <td scope="col">
-                  {{ stockData?.preOpenMarket?.totalSellQuantity }}
-                </td>
+                <th scope="col">Beta (5Y Monthly)</th>
+                <td scope="col">{{ stockMetaData?.peRatio }}</td>
               </tr>
             </thead>
             <thead>
               <tr>
-                <th scope="col">TotalTradedVolume</th>
-                <td scope="col">
-                  {{ stockData?.preOpenMarket?.totalTradedVolume }}
-                </td>
+                <th scope="col">EPS (TTM)</th>
+                <td scope="col">{{ stockMetaData?.eps }}</td>
               </tr>
             </thead>
             <thead>
               <tr>
-                <th scope="col">Lower Circuit</th>
-                <td scope="col">₹ {{ stockData?.priceInfo?.lowerCP }}</td>
+                <th scope="col">Earnings Date</th>
+                <td scope="col">{{ stockMetaData?.earningsDate }}</td>
               </tr>
             </thead>
             <thead>
               <tr>
-                <th scope="col">Upper Circuit</th>
-                <td scope="col">₹ {{ stockData?.priceInfo?.upperCP }}</td>
+                <th scope="col">Forward Dividend & Yield</th>
+                <td scope="col">{{ stockMetaData?.forwardDividendAndYield }}</td>
               </tr>
             </thead>
             <thead>
               <tr>
-                <th scope="col">Face Value</th>
-                <td scope="col">{{ stockData?.securityInfo?.faceValue }}</td>
+                <th scope="col">Ex-Dividend Date</th>
+                <td scope="col">{{ stockMetaData?.exDividendDate }}</td>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th scope="col">1y Target Est</th>
+                <td scope="col">{{ stockMetaData?.yearTargetEst }}</td>
               </tr>
             </thead>
           </table>
         </div>
       </div>
     </div>
-    <div class="main-container">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">
-            <b>Daily High & Low</b>
-          </h4>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">
-            <b>Weekly High & Low</b>
-          </h4>
-        </div>
-      </div>
-    </div>
-    <div class="line-meters-container">
-      <div class="line-meter">
-        <div class="line"></div>
-        <div class="point" [style.left.%]="calculateDailyHigh()"></div>
-        <div class="high-low-label high">
-          <span>Today's High<br /></span>
-          {{ stockData?.priceInfo?.intraDayHighLow?.max }}
-        </div>
-        <div class="high-low-label low">
-          <span>Today's Low<br /></span>
-          {{ stockData?.priceInfo?.intraDayHighLow?.min }}
-        </div>
-      </div>
-
-      <div class="line-meter">
-        <div class="line"></div>
-        <div class="point" [style.left.%]="calculateWeaklyHigh()"></div>
-        <div class="high-low-label high">
-          <span>Today's High<br /></span>
-          {{ stockData?.priceInfo?.weekHighLow?.max }}
-        </div>
-        <div class="high-low-label low">
-          <span>Today's Low<br /></span>
-          {{ stockData?.priceInfo?.weekHighLow?.min }}
-        </div>
-      </div>
-    </div>
+    <br>
+    <br>
   </div>
 
   <div *ngIf="ASSET_TYPE === 'CRYPTO'">

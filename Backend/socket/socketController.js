@@ -40,7 +40,7 @@ export class StockDataHandler {
                     if (data?.length > 0) {
                         data?.forEach(stock => {
                             const rawData = stock;
-                            console.log("---oooo-",rawData)
+                            console.log("---oooo---",rawData)
                             transformedData.push({
                                 id: rawData.id,
                                 price: rawData.price,

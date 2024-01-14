@@ -347,7 +347,89 @@ def get_stock_data():
     except Exception as e:
         return jsonify({'error': f'Error: {e}'})        
                 
+# stock_financial_data
+@app.route('/get_stock_financial_data', methods=['GET'])
+def get_stock_data_meta():
+    symbol_f = request.args.get('symbol')
+    
+    if not symbol_f:
+        return jsonify({'error': 'No symbol provided'})
 
+    try:
+        ticker = yf.Ticker(symbol_f)
+        stock_info = ticker.info
+
+        if not stock_info.empty:
+            # stock_Symbol = stock_info['symbol']
+            # last_price = stock_info['last_price']
+            # day_range = stock_info['day_range']
+            # day_low = stock_info['day_low']
+            # day_high = stock_info['day_high']
+            # previous_close = stock_info['previous_close']
+            # volume = stock_info['volume']
+            # Extracting more attributes from stock_info
+            company_name = stock_info['longName']
+            sector = stock_info['sector']
+            market_cap = stock_info['marketCap']
+            open_price = stock_info['regularMarketOpen']
+            close_price = stock_info['regularMarketPreviousClose']
+            change = close_price - open_price  # Change is the difference between open and close prices
+            fundamentals = stock_info['fundamentals']
+            total_buy_quantity = fundamentals['totalBuyQuantity']
+            total_sell_quantity = fundamentals['totalSellQuantity']
+            total_traded_volume = stock_info['regularMarketVolume']
+            lower_circuit = fundamentals['lowerCircuitPrice']
+            upper_circuit = fundamentals['upperCircuitPrice']
+            face_value = fundamentals['faceValue']
+            daily_high = stock_info['regularMarketDayHigh']
+            daily_low = stock_info['regularMarketDayLow']
+            weekly_high = fundamentals['weekHigh52']
+            weekly_low = fundamentals['weekLow52']
+
+
+            response_data_f = {
+                'companyName': company_name,
+                'sector': sector,
+                'marketCap': market_cap,
+                'openPrice': open_price,
+                'closePrice': close_price,
+                'change': change,
+                'totalBuyQuantity': total_buy_quantity,
+                'totaSellQuantity': total_sell_quantity,
+                'totalTradedVolume': total_traded_volume,
+                'lowerCircuit': lower_circuit,
+                'upperCircuit': upper_circuit,
+                'faceValue': face_value,
+                'dailylow': daily_low,
+                'dailyHigh':daily_high,
+                'weeklyHigh': weekly_high,
+                'weeklylow': weekly_low
+            }
+
+            return jsonify(response_data_f)
+        else:
+            response_data_f = {
+                'companyName': 0,
+                'sector': 0,
+                'marketCap': 0,
+                'openPrice': 0,
+                'closePrice': 0,
+                'change': 0,
+                'totalBuyQuantity': 0,
+                'totaSellQuantity': 0,
+                'totalTradedVolume': 0,
+                'lowerCircuit': 0,
+                'upperCircuit': 0,
+                'faceValue': 0,
+                'dailylow': 0,
+                'weeklyHigh': 0,
+                'weeklylow': 0
+            }
+            
+            return jsonify(response_data_f)
+    except Exception as e:
+        return jsonify({'error': f'Error: {e}'})        
+ 
 #  chat part
 
 openai.api_key=open('API_KEY','r').read()

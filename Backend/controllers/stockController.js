@@ -1,3 +1,5 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import axios from "axios";
 import { NseIndia } from "stock-nse-india";
 const nseIndia = new NseIndia()
@@ -31,10 +33,10 @@ export const GetStockDetails = async (sym)=>{
     if(!sym){
         return{};
     }
-
+   
     try {
 
-        const resp = await axios.get('http://127.0.0.1:8000/get_stock_data', {
+        const resp = await axios.get(`${process.env.FLASK_URL}/get_stock_data`, {
             params: {
                 symbol: sym?.toUpperCase() + ".NS", // Convert the array to a comma-separated string
         }})
@@ -45,32 +47,54 @@ export const GetStockDetails = async (sym)=>{
             dayVolume: volume
         }
 
-        // axios.get('http://127.0.0.1:8000/get_stock_data', {
-        //     params: {
-        //         symbol: symbol?.toUpperCase() + ".NS", // Convert the array to a comma-separated string
-        // }}).then((response) => {
-        //     console.log(response?.data)
-        //     const { symbol, price, volume } = response.data
-        //     console.log('Symbol:', symbol);
-        //     console.log('Price:', price);
-        //     console.log('Day Volume:', volume);
-        //     console.log("--------------",{
-        //         id: symbol,
-        //         price: price,
-        //         dayVolume: volume
-        //     })
-        //     return {
-        //         id: symbol,
-        //         price: price,
-        //         dayVolume: volume
-        //     }
-        // }).catch((err)=>{
-        //     console.log("error occured while getting stock data from flask api " ,err);
-        // })
+        
     }catch(er){
         console.log(er);
     }
 }
+
+
+
+export const GetStockFinancialData = async (req,res)=>{
+    let sym = req.params.symbol;
+    console.log("Symbol",sym);
+    if(!sym){
+        return{};
+    }
+    try {
+            const url = `https://finance.yahoo.com/quote/${sym}.NS`;
+            console.log(url)
+            const response = await axios.get(url);
+            const html = response.data;
+            const $ = cheerio.load(html);
+            // const element = $('td[data-test="PREV_CLOSE-value"]');
+            // const text = element.text();
+            // console.log(text);
+            const stockData = {
+              previousClose: $('td[data-test="PREV_CLOSE-value"]').text(),
+              open: $('td[data-test="OPEN-value"]').text(),
+              bid: $('td[data-test="BID-value"]').text(),
+              ask: $('td[data-test="ASK-value"]').text(),
+              dayRange: $('td[data-test="DAYS_RANGE-value"]').text(),
+              weekRange: $('td[data-test="FIFTY_TWO_WK_RANGE-value"]').text(),
+              volume: $('td[data-test="TD_VOLUME-value"]').text(),
+              avgVolume: $('td[data-test="AVERAGE_VOLUME_3MONTH-value"]').text(),
+              marketCap: $('td[data-test="MARKET_CAP-value"]').text(),
+              beta: $('td[data-test="BETA_5Y-value"]').text(),
+              peRatio: $('td[data-test="PE_RATIO-value"]').text(),
+              eps: $('td[data-test="EPS_RATIO-value"]').text(),
+              earningsDate: $('td[data-test="EARNINGS_DATE-value"]').text(),
+              forwardDividendAndYield: $('td[data-test="DIVIDEND_AND_YIELD-value"]').text(),
+              exDividendDate: $('td[data-test="EX_DIVIDEND_DATE-value"]').text(),
+              yearTargetEst: $('td[data-test="ONE_YEAR_TARGET_PRICE-value"]').text()
+            };
+            console.log("Meta Dataa",stockData);
+           return res.json(stockData);
+    }catch(er){
+        console.log("ERRRO GETTING THE DATA WHEN MARKET IS COOSED",er);
+    }
+}
+
 
 export const getStockPriceBetweenDateRange = async(req, res) => {
 
@@ -203,6 +227,7 @@ export const isMarketOpen = async() => {
 
         const resp = await axios.get("https://economictimes.indiatimes.com/markets");
         const html = resp.data;
+        console.log("WEB Data")
         const $ = cheerio.load(html);
         const marketStatus = $('.mktStatus').text();
         console.log(marketStatus)
