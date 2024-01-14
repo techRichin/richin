@@ -125,7 +125,7 @@ async function GetTopNiftyGainers(limit) {
       const $ = cheerio.load(html);
       const tb = $('.tb10Table > tbody');
       const topGainers = [];
-
+      console.log("respose from Grow",response)
       tb.find('tr').each((index, element) => {
         if(limit == topGainers.length){
             return topGainers;
