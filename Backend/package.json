@@ -39,7 +39,8 @@
     "socket.io": "^4.7.2",
     "stock-nse-india": "^1.1.2",
     "stocksocket": "^2.1.2",
-    "yahoo-finance": "^0.3.8"
+    "yahoo-finance": "^0.3.8",
+    "yfinance": "^0.0.6"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"

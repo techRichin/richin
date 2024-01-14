@@ -1,3 +1,5 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import axios from "axios";
 import { NseIndia } from "stock-nse-india";
 const nseIndia = new NseIndia()
@@ -34,7 +36,7 @@ export const GetStockDetails = async (sym)=>{
    
     try {
 
-        const resp = await axios.get('http://127.0.0.1:8000/get_stock_data', {
+        const resp = await axios.get(`${process.env.FLASK_URL}/get_stock_data`, {
             params: {
                 symbol: sym?.toUpperCase() + ".NS", // Convert the array to a comma-separated string
         }})
@@ -64,13 +66,10 @@ export const GetStockFinancialData = async (req,res)=>{
             console.log(url)
             const response = await axios.get(url);
             const html = response.data;
-          
             const $ = cheerio.load(html);
             // const element = $('td[data-test="PREV_CLOSE-value"]');
             // const text = element.text();
-
             // console.log(text);
-
             const stockData = {
               previousClose: $('td[data-test="PREV_CLOSE-value"]').text(),
               open: $('td[data-test="OPEN-value"]').text(),
@@ -92,7 +91,7 @@ export const GetStockFinancialData = async (req,res)=>{
             console.log("Meta Dataa",stockData);
            return res.json(stockData);
     }catch(er){
-        console.log(er);
+        console.log("ERRRO GETTING THE DATA WHEN MARKET IS COOSED",er);
     }
 }
 
@@ -228,6 +227,7 @@ export const isMarketOpen = async() => {
 
         const resp = await axios.get("https://economictimes.indiatimes.com/markets");
         const html = resp.data;
+        console.log("WEB Data")
         const $ = cheerio.load(html);
         const marketStatus = $('.mktStatus').text();
         console.log(marketStatus)

@@ -348,7 +348,6 @@ def get_stock_data():
         return jsonify({'error': f'Error: {e}'})        
                 
 # stock_financial_data
-# stock details 
 @app.route('/get_stock_financial_data', methods=['GET'])
 def get_stock_data_meta():
     symbol_f = request.args.get('symbol')
